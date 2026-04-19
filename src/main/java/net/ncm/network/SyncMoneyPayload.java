@@ -8,8 +8,6 @@ import net.ncm.Ludomania;
 
 public record SyncMoneyPayload(long balance) implements CustomPayload {
     public static final CustomPayload.Id<SyncMoneyPayload> ID = new CustomPayload.Id<>(Identifier.of(Ludomania.MOD_ID, "sync_money"));
-
-    // Кодек для передачи числа (long) по сети
     public static final PacketCodec<RegistryByteBuf, SyncMoneyPayload> CODEC = CustomPayload.codecOf(
             (payload, buf) -> buf.writeLong(payload.balance()),
             buf -> new SyncMoneyPayload(buf.readLong())

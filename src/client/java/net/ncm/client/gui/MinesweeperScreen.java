@@ -56,12 +56,10 @@ public class MinesweeperScreen extends Screen {
         int leftPanelX = this.width / 2 - 160;
         int startY = this.height / 2 - 80;
 
-        // Поле ставки
         this.betField = new TextFieldWidget(this.textRenderer, leftPanelX, startY, 120, 20, Text.literal("Ставка"));
         this.betField.setTextPredicate(text -> text.matches("^[0-9]*$"));
         this.addDrawableChild(betField);
 
-        // Список бомб
         this.bombListWidget = new BombListWidget(this.client, 120, 100, startY + 35, 20);
         for (int i = 1; i <= 24; i++) {
             BombEntry entry = new BombEntry(i);
@@ -70,7 +68,6 @@ public class MinesweeperScreen extends Screen {
         }
         this.addDrawableChild(bombListWidget);
 
-        // Кнопка действия (Начать / Забрать)
         this.actionButton = ButtonWidget.builder(Text.literal("Начать"), button -> {
             if (currentState == State.IDLE || currentState == State.GAME_OVER) {
                 try {

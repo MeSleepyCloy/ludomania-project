@@ -15,16 +15,10 @@ import net.ncm.client.gui.AtmScreen;
 import net.ncm.client.gui.CaseScreen;
 import net.ncm.client.gui.MoneyHud;
 import net.ncm.client.render.PedestalBlockEntityRenderer;
-import net.ncm.network.AtmPlayersPayload;
-import net.ncm.network.OpenCasePayload;
-import net.ncm.network.SpinResultPayload;
+import net.ncm.network.*;
 import net.ncm.client.gui.MinesweeperScreen;
-import net.ncm.network.OpenMinesweeperPayload;
-import net.ncm.network.MinesweeperResponsePayload;
-import net.ncm.network.SyncMoneyPayload;
 
 import net.ncm.client.gui.QuestHud;
-import net.ncm.network.SyncQuestPayload;
 
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.ncm.client.render.TraderEntityRenderer;
@@ -87,6 +81,14 @@ public class LudomaniaClient implements ClientModInitializer {
                     isFirstJoin = false;
                 } else {
                     MoneyHud.setBalance(payload.balance());
+                }
+            });
+        });
+
+        ClientPlayNetworking.registerGlobalReceiver(CaseErrorPayload.ID, (payload, context) -> {
+            context.client().execute(() -> {
+                if (context.client().currentScreen instanceof CaseScreen caseScreen) {
+                    caseScreen.onCaseError(payload.message());
                 }
             });
         });

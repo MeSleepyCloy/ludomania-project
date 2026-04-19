@@ -33,7 +33,6 @@ public class TraderScreen extends HandledScreen<TraderScreenHandler> {
     private static final Identifier SCROLLER_TEXTURE = Identifier.ofVanilla("container/creative_inventory/scroller");
     private static final Identifier SCROLLER_DISABLED_TEXTURE = Identifier.ofVanilla("container/creative_inventory/scroller_disabled");
 
-    // Константа для отрисовки изумруда
     private static final ItemStack EMERALD = new ItemStack(Items.EMERALD);
 
     private TraderEntity renderEntity;
@@ -138,14 +137,11 @@ public class TraderScreen extends HandledScreen<TraderScreenHandler> {
             context.drawItem(offer.requiredItem(), listX + 2, rowY + 3);
             context.drawStackOverlay(this.textRenderer, offer.requiredItem(), listX + 2, rowY + 3);
 
-            // Конвертируем число (например: 3000 -> 3k) через MoneyHud
             String formattedReward = MoneyHud.formatMoney((long) offer.reward());
             Text rewardText = Text.literal("→ ").formatted(Formatting.GRAY).append(Text.literal(formattedReward).formatted(Formatting.GREEN));
 
-            // Отрисовываем отформатированный текст
             context.drawTextWithShadow(this.textRenderer, rewardText, listX + 24, rowY + 7, 0xFFFFFF);
 
-            // Фиксированная координата X (54) прижмет изумруд к правому краю, выстраивая их в ровный столбец
             int emeraldX = listX + 54;
             context.drawItem(EMERALD, emeraldX, rowY + 3);
         }

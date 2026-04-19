@@ -20,7 +20,6 @@ public class MoneyHud implements HudRenderCallback {
 
     private static final Identifier BACKGROUND = Identifier.of("ludomania", "textures/hud/hud.png");
 
-    // Переменные для плавной анимации
     private static long targetBalance = 0;
     private static double displayBalance = 0;
     private static long startBalance = 0;
@@ -30,7 +29,6 @@ public class MoneyHud implements HudRenderCallback {
     private static final ItemStack EMERALD = new ItemStack(Items.EMERALD);
     private static final List<FlyingNumber> flyingNumbers = new ArrayList<>();
 
-    // Метод для получения реального баланса (для проверок в банкомате)
     public static long getActualBalance() {
         return targetBalance;
     }
@@ -38,7 +36,6 @@ public class MoneyHud implements HudRenderCallback {
     public static void setBalance(long newBalance) {
         if (targetBalance == newBalance) return;
 
-        // Если это первый заход в игру (анимация еще не запускалась), просто ставим число
         if (animationStartTime == 0) {
             targetBalance = newBalance;
             displayBalance = newBalance;
@@ -80,7 +77,6 @@ public class MoneyHud implements HudRenderCallback {
 
         long now = Util.getMeasuringTimeMs();
 
-        // 1. Математика плавной накрутки баланса (Ease Out)
         if (now < animationStartTime + ANIM_DURATION) {
             double t = (double) (now - animationStartTime) / ANIM_DURATION;
             double easeOut = 1.0 - Math.pow(1.0 - t, 3);

@@ -235,6 +235,9 @@ public class Ludomania implements ModInitializer {
         Registry.register(Registries.ITEM, CASE_7_KEY, CASE_7_ITEM);
         Registry.register(Registries.ITEM, CASE_8_KEY, CASE_8_ITEM);
 
+        PayloadTypeRegistry.playS2C().register(CaseErrorPayload.ID, CaseErrorPayload.CODEC);
+
+
         PayloadTypeRegistry.playS2C().register(SyncQuestPayload.ID, SyncQuestPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(OpenCasePayload.ID, OpenCasePayload.CODEC);
         PayloadTypeRegistry.playS2C().register(SyncMoneyPayload.ID, SyncMoneyPayload.CODEC);
@@ -284,6 +287,20 @@ public class Ludomania implements ModInitializer {
 
                 CaseRegistry.CaseData caseData = CaseRegistry.getCase(payload.caseId());
                 long totalCost = caseData.price() * payload.amount();
+
+                // --- НОВОЕ: Серверная проверка инвентаря ---
+                int emptySlots = 0;
+                for (int i = 0; i < 36; i++) {
+                    if (player.getInventory().getMainStacks().get(i).isEmpty()) {
+                        emptySlots++;
+                    }
+                }
+
+                if (emptySlots < payload.amount()) {
+                    // Инвентарь забит - отправляем клиенту ошибку, чтобы он сбросил кнопку
+                    ServerPlayNetworking.send(player, new CaseErrorPayload("Инвентарь забит!"));
+                    return;
+                }
 
                 if (MoneyState.getBalance(context.server(), player.getUuid()) >= totalCost) {
 

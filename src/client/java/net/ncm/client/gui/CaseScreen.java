@@ -65,6 +65,12 @@ public class CaseScreen extends Screen {
         }
     }
 
+    public void onCaseError(String message) {
+        this.currentState = State.IDLE;
+        this.updateButtonVisibility();
+        this.showError(message);
+    }
+
     @Override
     protected void init() {
         super.init();
@@ -82,6 +88,17 @@ public class CaseScreen extends Screen {
                 long totalCost = caseData.price() * AMOUNTS[amountIndex];
                 if (MoneyHud.getActualBalance() < totalCost) {
                     showError("Недостаточно средств!");
+                    return;
+                }
+
+                int emptySlots = 0;
+                for (int i = 0; i < 36; i++) {
+                    if (this.client.player.getInventory().getMainStacks().get(i).isEmpty()) {
+                        emptySlots++;
+                    }
+                }
+                if (emptySlots < AMOUNTS[amountIndex]) {
+                    showError("Инвентарь забит!");
                     return;
                 }
 
@@ -142,10 +159,20 @@ public class CaseScreen extends Screen {
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
         if (currentState == State.IDLE) {
             dropScroll -= verticalAmount * 20;
+
             int itemSize = 40;
             int spacing = 10;
-            int totalContentWidth = pool.size() * (itemSize + spacing) + 10;
-            double maxScroll = Math.max(0, totalContentWidth - 200);
+            int cols = 4;
+            int rows = (int) Math.ceil((double) pool.size() / cols);
+            int totalContentHeight = rows * (itemSize + spacing) + 10;
+
+            int startY = this.height / 2 + 35;
+            int boxHeight = this.height - startY - 10;
+            if (boxHeight > 130) {
+                boxHeight = 130;
+            }
+
+            double maxScroll = Math.max(0, totalContentHeight - boxHeight);
 
             if (dropScroll < 0) dropScroll = 0;
             if (dropScroll > maxScroll) dropScroll = maxScroll;
@@ -178,23 +205,35 @@ public class CaseScreen extends Screen {
     }
 
     private void renderDropList(DrawContext context) {
-        int boxWidth = 200;
-        int boxHeight = 60;
+        int cols = 4;
+        int itemSize = 40;
+        int spacing = 10;
+        int boxWidth = cols * (itemSize + spacing) + 10;
+
+        int startY = this.height / 2 + 35;
+        int boxHeight = this.height - startY - 10;
+
+        if (boxHeight > 130) {
+            boxHeight = 130;
+            startY = this.height - boxHeight - 20;
+        }
+
         int startX = (this.width - boxWidth) / 2;
-        int startY = this.height - boxHeight - 80;
 
         context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Возможный дроп (Прокрутка колесиком):"), this.width / 2, startY - 15, 0xAAAAAA);
         context.fill(startX, startY, startX + boxWidth, startY + boxHeight, 0x88000000);
         context.enableScissor(startX, startY, startX + boxWidth, startY + boxHeight);
 
-        int itemSize = 40;
-        int spacing = 10;
         for (int i = 0; i < pool.size(); i++) {
             CaseRegistry.LootEntry entry = pool.get(i);
-            int x = startX + 10 + i * (itemSize + spacing) - (int) dropScroll;
-            int y = startY + 10;
 
-            if (x + itemSize > startX && x < startX + boxWidth) {
+            int col = i % cols;
+            int row = i / cols;
+
+            int x = startX + 10 + col * (itemSize + spacing);
+            int y = startY + 10 + row * (itemSize + spacing) - (int) dropScroll;
+
+            if (y + itemSize > startY && y < startY + boxHeight) {
                 context.fill(x, y, x + itemSize, y + itemSize, 0xAA222222);
                 context.drawBorder(x, y, itemSize, itemSize, entry.rarity().getColor());
                 context.getMatrices().push();
@@ -258,26 +297,41 @@ public class CaseScreen extends Screen {
         int cols = amount >= 5 ? 5 : amount;
         int rows = (int) Math.ceil((double) amount / cols);
         int slotSize = 40;
-        int spacing = 15;
-        int totalW = cols * slotSize + (cols - 1) * spacing;
-        int totalH = rows * slotSize + (rows - 1) * spacing;
+
+        int spacingX = 60;
+        int spacingY = 40;
+
+        int totalW = cols * slotSize + (cols - 1) * spacingX;
+        int totalH = rows * slotSize + (rows - 1) * spacingY;
         int sX = (this.width - totalW) / 2;
         int sY = (this.height - totalH) / 2 + 10;
 
         for (int i = 0; i < amount; i++) {
             int c = i % cols;
             int r = i / cols;
-            int x = sX + c * (slotSize + spacing);
-            int y = sY + r * (slotSize + spacing);
+            int x = sX + c * (slotSize + spacingX);
+            int y = sY + r * (slotSize + spacingY);
+
             Roulette roulette = roulettes.get(i);
             int rarityColor = roulette.wonEntry.rarity().getColor();
 
+            ///  Background  and Frame Item
             context.fill(x, y, x + slotSize, y + slotSize, 0x88000000);
             context.drawBorder(x, y, slotSize, slotSize, rarityColor);
+
+            /// Item
             context.getMatrices().push();
             context.getMatrices().translate(x + slotSize / 2f, y + slotSize / 2f, 0);
             context.getMatrices().scale(1.5F, 1.5F, 1.5F);
             context.drawItem(roulette.wonEntry.item(), -8, -8);
+            context.getMatrices().pop();
+
+            Text itemName = roulette.wonEntry.item().getName();
+
+            context.getMatrices().push();
+            context.getMatrices().translate(0, 0, 200);
+
+            context.drawCenteredTextWithShadow(this.textRenderer, itemName, x + slotSize / 2, y + slotSize + 6, rarityColor);
             context.getMatrices().pop();
         }
     }
