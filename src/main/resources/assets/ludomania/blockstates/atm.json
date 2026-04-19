@@ -1,0 +1,25 @@
+{
+  "variants": {
+    "facing=north,half=lower": { "model": "ludomania:block/atm" },
+    "facing=east,half=lower":  { "model": "ludomania:block/atm", "y": 90 },
+    "facing=south,half=lower": { "model": "ludomania:block/atm", "y": 180 },
+    "facing=west,half=lower":  { "model": "ludomania:block/atm", "y": 270 },
+
+    "facing=north,half=upper": {
+      "model": "minecraft:block/air",
+      "textures": { "particle": "ludomania:block/atm" }
+    },
+    "facing=east,half=upper": {
+      "model": "minecraft:block/air",
+      "textures": { "particle": "ludomania:block/atm" }
+    },
+    "facing=south,half=upper": {
+      "model": "minecraft:block/air",
+      "textures": { "particle": "ludomania:block/atm" }
+    },
+    "facing=west,half=upper": {
+      "model": "minecraft:block/air",
+      "textures": { "particle": "ludomania:block/atm" }
+    }
+  }
+}

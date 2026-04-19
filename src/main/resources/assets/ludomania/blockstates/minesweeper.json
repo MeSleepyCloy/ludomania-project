@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "ludomania:block/minesweeper" },
+    "facing=east":  { "model": "ludomania:block/minesweeper", "y": 90 },
+    "facing=south": { "model": "ludomania:block/minesweeper", "y": 180 },
+    "facing=west":  { "model": "ludomania:block/minesweeper", "y": 270 }
+  }
+}

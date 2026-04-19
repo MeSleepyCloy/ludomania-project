@@ -1,0 +1,36 @@
+{
+  "case.ludomania.basic": "Базовый кейс",
+  "case.ludomania.case1": "Кейс с блоками",
+  "case.ludomania.case2": "Кейс с едой",
+  "case.ludomania.case3": "Кейс с топорами",
+  "case.ludomania.case4": "Кейс с драгоценностями",
+  "case.ludomania.case5": "Кейс с мечами",
+  "case.ludomania.case6": "Кейс с зельями",
+  "case.ludomania.case7": "Кейс с артефактами",
+  "case.ludomania.case8": "Кейс с фигурками",
+  "case.ludomania.premium": "Премиум кейс",
+
+  "block.ludomania.pedestal": "Пьедестал",
+  "item.ludomania.pedestal": "Пьедестал",
+
+
+  "item.ludomania.case1": "Кейс с блоками",
+  "item.ludomania.case2": "Кейс с едой",
+  "item.ludomania.case3": "Кейс с топорами",
+  "item.ludomania.case4": "Кейс с драгоценностями",
+  "item.ludomania.case5": "Кейс с мечами",
+  "item.ludomania.case6": "Кейс с зельями",
+  "item.ludomania.case7": "Кейс с артефактами",
+  "item.ludomania.case8": "Кейс с фигурками",
+
+  "name.ludomania.trader1": "Эми",
+  "name.ludomania.trader2": "Кира",
+  "name.ludomania.trader3": "Селис",
+  "name.ludomania.trader4": "Астра",
+  "name.ludomania.trader5": "Луми",
+
+  "item.ludomania.atm": "Банкомат",
+  "item.ludomania.minesweeper": "Сапёр",
+
+  "itemgroup.ludomania.Ludomania_items": "Ludomania | MAP"
+}
