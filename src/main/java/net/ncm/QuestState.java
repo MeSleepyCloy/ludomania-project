@@ -1,12 +1,19 @@
 package net.ncm;
 
 import com.mojang.serialization.Codec;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.Uuids;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.PersistentStateType;
 import net.minecraft.world.World;
+import net.ncm.network.SyncMoneyPayload;
+import net.ncm.network.SyncQuestPayload;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,14 +67,14 @@ public class QuestState extends PersistentState {
         return 0;
     }
 
-    public static void setQuestProgress(MinecraftServer server, net.minecraft.server.network.ServerPlayerEntity player, int progress) {
+    public static void setQuestProgress(MinecraftServer server, ServerPlayerEntity player, int progress) {
         QuestState state = getServerState(server);
         String currentQuest = getActiveQuest(server, player.getUuid());
         if (!currentQuest.isEmpty()) {
             String raw = currentQuest + ":" + progress;
             state.activeQuests.put(player.getUuid(), raw);
             state.markDirty();
-            net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, new net.ncm.network.SyncQuestPayload(raw, true));
+           ServerPlayNetworking.send(player, new SyncQuestPayload(raw, true));
         }
     }
 
@@ -81,21 +88,21 @@ public class QuestState extends PersistentState {
         state.markDirty();
     }
 
-    public static void completeQuest(MinecraftServer server, net.minecraft.server.network.ServerPlayerEntity player, String questId) {
+    public static void completeQuest(MinecraftServer server, ServerPlayerEntity player, String questId) {
         QuestRegistry.QuestData data = QuestRegistry.getQuest(questId);
         if (data == null) return;
 
         setActiveQuest(server, player.getUuid(), "");
-        net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, new net.ncm.network.SyncQuestPayload("", false));
+        ServerPlayNetworking.send(player, new SyncQuestPayload("", false));
 
         if (data.reward() > 0) {
             MoneyState.addBalance(server, player.getUuid(), data.reward());
-            net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, new net.ncm.network.SyncMoneyPayload(MoneyState.getBalance(server, player.getUuid())));
-            player.sendMessage(net.minecraft.text.Text.literal("§aЗадание выполнено! Награда: " + data.reward() + ""), false);
+            ServerPlayNetworking.send(player, new SyncMoneyPayload(MoneyState.getBalance(server, player.getUuid())));
+            player.sendMessage(Text.literal("§aЗадание выполнено! Награда: " + data.reward() + ""), false);
         } else {
-            player.sendMessage(net.minecraft.text.Text.literal("§aЗадание выполнено!"), false);
+            player.sendMessage(Text.literal("§aЗадание выполнено!"), false);
         }
 
-        player.playSoundToPlayer(net.minecraft.sound.SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, net.minecraft.sound.SoundCategory.MASTER, 1.0f, 1.0f);
+        player.playSoundToPlayer(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, 1.0f, 1.0f);
     }
 }
